@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from starlette.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from functions import process_docx_nda
+from functions import process_docx_nda, docx_to_pdf
 
 import os
 
@@ -23,7 +23,10 @@ app.add_middleware(
 async def process_docx_api(request: Request):
     custom_values = await request.json()
     processed_file = process_docx_nda.process_docx(custom_values)
-    return FileResponse(processed_file)
+    if custom_values['convertToPDF']:
+        return docx_to_pdf.convert_docx_to_pdf(processed_file)
+    else:
+        return FileResponse(processed_file)
 
 if __name__ == "__main__":
     import uvicorn

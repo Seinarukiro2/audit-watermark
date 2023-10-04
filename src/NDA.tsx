@@ -12,6 +12,7 @@ import {
     TextField,
     Button,
     CssBaseline,
+    Checkbox,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -25,7 +26,7 @@ const NDA: React.FC = () => {
         zipCodeCity: '',
     });
     const [ticketNumber, setTicketNumber] = useState('');
-
+    const [convertToPDF, setConvertToPDF] = useState(false);
     const [errors, setErrors] = useState({
         question1: false,
         question2: false,
@@ -63,6 +64,7 @@ const NDA: React.FC = () => {
                         customerName,
                         address,
                         ticketNumber,
+                        convertToPDF
                     }),
                 });
 
@@ -273,6 +275,18 @@ const NDA: React.FC = () => {
                             variant="outlined"
                         />
                         {errors.ticketNumber && <div style={{ color: 'red' }}>This field is required</div>}
+                    </Grid>
+                    <Grid item xs={12}>
+                                <FormControlLabel
+                        control={
+                            <Checkbox
+                            checked={convertToPDF}
+                            onChange={() => setConvertToPDF(!convertToPDF)}
+                            color="primary"
+                            />
+                        }
+                        label="Convert to PDF (beta)"
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         <Button
