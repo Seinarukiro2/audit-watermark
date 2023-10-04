@@ -1,0 +1,5 @@
+fastapi==0.103.1
+starlette==0.27.0
+python-docx==0.8.11
+uvicorn==0.23.2
+docx2pdf==0.1.8

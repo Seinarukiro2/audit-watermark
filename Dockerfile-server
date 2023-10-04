@@ -1,0 +1,18 @@
+# Используйте официальный образ Python
+FROM python:3.9-slim
+
+
+# Копируйте файл requirements.txt в контейнер
+COPY server/requirements.txt /app/requirements.txt
+
+# Установите зависимости
+RUN pip install -r /app/requirements.txt
+
+# Копируйте файлы сервера в контейнер
+COPY server /app
+
+# Установите рабочую директорию
+WORKDIR /app
+
+# Запустите сервер
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

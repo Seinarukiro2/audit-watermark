@@ -1,0 +1,15 @@
+version: '3'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile-server
+    ports:
+      - '8000:8000'  # Порт сервера FastAPI
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontend
+    ports:
+      - '3000:3000'  # Порт React-приложения

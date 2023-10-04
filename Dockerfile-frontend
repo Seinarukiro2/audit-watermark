@@ -1,0 +1,15 @@
+# Используйте официальный образ Node.js
+FROM node:14
+
+# Установите зависимости и соберите React-приложение
+WORKDIR /app
+COPY ./node_modules/package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Определите порт
+EXPOSE 3000
+
+# Запустите фронтенд-сервер
+CMD ["npm", "start"]
