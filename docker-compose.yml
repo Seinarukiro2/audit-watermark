@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile-server
     ports:
-      - '8007:8007'  # Порт сервера FastAPI
+      - '8003:8003'  # Порт сервера FastAPI
 
   client:
     build:
