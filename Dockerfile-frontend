@@ -3,7 +3,7 @@ FROM node:14
 
 # Установите зависимости и соберите React-приложение
 WORKDIR /app
-COPY ./node_modules/package*.json ./
+COPY package.json /app
 RUN npm install
 COPY . .
 RUN npm run build

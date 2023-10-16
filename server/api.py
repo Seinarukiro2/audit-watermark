@@ -18,7 +18,6 @@ app.add_middleware(
 )
 
 
-# API-маршрут для обработки файла с кастомными значениями
 @app.post("/process_docx_nda/")
 async def process_docx_api(request: Request):
     custom_values = await request.json()

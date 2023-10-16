@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile-server
     ports:
-      - '8000:8000'  # Порт сервера FastAPI
+      - '8007:8007'  # Порт сервера FastAPI
 
   client:
     build:
@@ -13,3 +13,9 @@ services:
       dockerfile: Dockerfile-frontend
     ports:
       - '3000:3000'  # Порт React-приложения
+  nginx:
+    image: nginx:latest
+    ports:
+      - "81:81"
+    volumes:
+      - ./nginx-config:/etc/nginx/conf.d
