@@ -16,6 +16,6 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "0.0.0.0:80:80"
     volumes:
-      - ./nginx-config:/etc/nginx/conf.d
+      - ./nginx.conf:/etc/nginx/conf.d/deafult.conf
