@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from starlette.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from server.functions import nda_pdf_worker
+from functions import nda_pdf_worker
 
 import os
 
