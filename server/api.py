@@ -23,10 +23,16 @@ app.add_middleware(
 )
 
 
-@app.post("/process_docx_nda/")
+@app.post("/get_nda/")
 async def process_docx_api(request: Request):
     custom_values = await request.json()
-    processed_file = nda_pdf_worker.edit_pdf(custom_values)
+    processed_file = nda_pdf_worker.edit_nda(custom_values)
+    return FileResponse(processed_file)
+
+@app.post("/get_rda/")
+async def process_docx_api(request: Request):
+    custom_values = await request.json()
+    processed_file = nda_pdf_worker.edit_rda(custom_values)
     return FileResponse(processed_file)
 
 if __name__ == "__main__":

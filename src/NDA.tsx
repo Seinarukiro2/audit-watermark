@@ -52,7 +52,7 @@ const NDA: React.FC = () => {
         } else {
             // Если все поля заполнены, можно выполнять запрос
             try {
-                const response = await fetch('http://80.158.59.110/process_docx_nda', {
+                const response = await fetch('http://80.158.59.110/get_nda', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
