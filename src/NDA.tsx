@@ -52,7 +52,7 @@ const NDA: React.FC = () => {
         } else {
             // Если все поля заполнены, можно выполнять запрос
             try {
-                const response = await fetch('http://0.0.0.0:8003/process_docx_nda', {
+                const response = await fetch('http://80.158.59.110/process_docx_nda', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const NDA: React.FC = () => {
                     const formattedDate = `${year}${month}${day}`;
 
 
-                    a.download = `NDA_${customerName}_${formattedDate}.docx`;
+                    a.download = `NDA_${customerName}_${formattedDate}.pdf`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
