@@ -46,10 +46,13 @@ def edit_rda(custom_values):
     writer = PdfWriter()
 
     writer.append(reader)
+    
+    address = custom_values["address"]["streetNumber"]}
+    city = custom_values["address"]["zipCodeCity"]
 
     writer.update_page_form_field_values(
         writer.pages[0], {"reference": custom_values['address']['companyName'], 
-        "contact": f"{custom_values["address"]["streetNumber"]}, {custom_values["address"]["zipCodeCity"]}",
+        "contact": f"{contact}, {city}",
         "phone": custom_values["telefonnummer"],
         "date": custom_values["selectedDate"]}
     )
