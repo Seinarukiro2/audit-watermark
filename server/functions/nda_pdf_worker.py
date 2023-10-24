@@ -46,8 +46,8 @@ def edit_rda(custom_values):
     writer = PdfWriter()
 
     writer.append(reader)
-    
-    address = custom_values["address"]["streetNumber"]}
+
+    address = custom_values["address"]["streetNumber"]
     city = custom_values["address"]["zipCodeCity"]
 
     writer.update_page_form_field_values(
