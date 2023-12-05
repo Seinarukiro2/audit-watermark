@@ -39,7 +39,7 @@ const hoveredIconStyle = {
 const HomePage = () => {
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {/* Карточка "Berichtsweitergabeerklärung" */}
+            
             <Link to="/report-disclosure-agreement" style={{ textDecoration: 'none' }}>
                 <Box sx={{ ...cardStyle, '&:hover': hoveredCardStyle }}>
                     <CardContent>
@@ -54,7 +54,7 @@ const HomePage = () => {
                 </Box>
             </Link>
 
-            {/* Карточка "NDA" */}
+            
             <Link to="/nda" style={{ textDecoration: 'none' }}>
                 <Box sx={{ ...cardStyle, '&:hover': hoveredCardStyle }}>
                     <CardContent>

@@ -6,53 +6,42 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     TextField,
     Button,
     CssBaseline,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const NDA: React.FC = () => {
     const [question1, setQuestion1] = useState('');
     const [question2, setQuestion2] = useState('');
-    const [customerName, setCustomerName] = useState('');
     const [address, setAddress] = useState({
         companyName: '',
         streetNumber: '',
         zipCodeCity: '',
     });
-    const [ticketNumber, setTicketNumber] = useState('');
+    
 
     const [errors, setErrors] = useState({
         question1: false,
         question2: false,
-        customerName: false,
-        companyName: false,
+        companyName: false, // Изменено с customerName на companyName
         streetNumber: false,
         zipCodeCity: false,
-        ticketNumber: false,
+        
     });
 
     const handleRequest = async () => {
-        // Проверка на заполнение полей перед отправкой
-        if (!question1 || !question2 || !customerName || !address.companyName || !address.streetNumber || !address.zipCodeCity || !ticketNumber) {
-            // Установка ошибок для незаполненных полей
+        if (!question1 || !question2 || !address.companyName || !address.streetNumber || !address.zipCodeCity) {
             setErrors({
                 question1: !question1,
                 question2: !question2,
-                customerName: !customerName,
                 companyName: !address.companyName,
                 streetNumber: !address.streetNumber,
                 zipCodeCity: !address.zipCodeCity,
-                ticketNumber: !ticketNumber,
             });
         } else {
-            // Если все поля заполнены, можно выполнять запрос
             try {
-                const response = await fetch('http://80.158.59.110/get_nda', {
+                const response = await fetch('https://auditrequest.tsi-dev.otc-service.com/get_nda', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -60,9 +49,8 @@ const NDA: React.FC = () => {
                     body: JSON.stringify({
                         question1,
                         question2,
-                        customerName,
                         address,
-                        ticketNumber,
+                        
                     }),
                 });
 
@@ -75,13 +63,17 @@ const NDA: React.FC = () => {
                     a.href = url;
                     const currentDate = new Date();
                     const year = currentDate.getFullYear();
-                    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // +1, так как месяцы в JavaScript начинаются с 0
+                    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
                     const day = currentDate.getDate().toString().padStart(2, '0');
 
                     const formattedDate = `${year}${month}${day}`;
+                    let doc_name = "Vertraulichkeitsvereinbarung";
+                    if (question1 === "English") {
+                        doc_name = "NDA";
+                    }
+                    const sanitizedCompanyName = address.companyName.replace(/ /g, "_")
+                    a.download = `${doc_name}_${sanitizedCompanyName}_${formattedDate}.pdf`;
 
-
-                    a.download = `NDA_${customerName}_${formattedDate}.pdf`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
@@ -89,18 +81,15 @@ const NDA: React.FC = () => {
                     setErrors({
                         question1: false,
                         question2: false,
-                        customerName: false,
                         companyName: false,
                         streetNumber: false,
                         zipCodeCity: false,
-                        ticketNumber: false,
+                        
                     });
                 } else {
-                    // Если сервер вернул ошибку, обработайте ее
                     console.error('Server error');
                 }
             } catch (error) {
-                // Обработка ошибок сети
                 console.error(error);
             }
         }
@@ -117,9 +106,7 @@ const NDA: React.FC = () => {
             setQuestion1(e.target.value);
         } else if (fieldName === 'question2') {
             setQuestion2(e.target.value);
-        } else if (fieldName === 'customerName') {
-            setCustomerName(e.target.value);
-        } else if (fieldName === 'companyName') {
+        } else if (fieldName === 'companyName') { // Изменено с customerName на companyName
             setAddress((prevState) => ({
                 ...prevState,
                 companyName: e.target.value,
@@ -134,9 +121,7 @@ const NDA: React.FC = () => {
                 ...prevState,
                 zipCodeCity: e.target.value,
             }));
-        } else if (fieldName === 'ticketNumber') {
-            setTicketNumber(e.target.value);
-        }
+        } 
     };
 
     return (
@@ -157,7 +142,7 @@ const NDA: React.FC = () => {
                         <RadioGroup
                             aria-label="Language"
                             name="question1"
-                            value={question1} // Должно быть значение, например, "Deutsch" или "English"
+                            value={question1}
                             onChange={handleInputChange('question1')}
                         >
                             <FormControlLabel
@@ -182,7 +167,7 @@ const NDA: React.FC = () => {
                         <RadioGroup
                             aria-label="TSI or TDG"
                             name="question2"
-                            value={question2} // Должно быть значение, например, "TSI" или "TDG"
+                            value={question2}
                             onChange={handleInputChange('question2')}
                         >
                             <FormControlLabel
@@ -202,78 +187,39 @@ const NDA: React.FC = () => {
                     </Grid>
 
                     <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Company name"
+                            variant="outlined"
+                            value={address.companyName}
+                            onChange={handleInputChange('companyName')}
+                            error={errors.companyName}
+                        />
+                        {errors.companyName && <div style={{ color: 'red' }}>This field is required</div>}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="Street, Number"
+                            variant="outlined"
+                            value={address.streetNumber}
+                            onChange={handleInputChange('streetNumber')}
+                            error={errors.streetNumber}
+                        />
+                        {errors.streetNumber && <div style={{ color: 'red' }}>This field is required</div>}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="ZIP Code, City"
+                            variant="outlined"
+                            value={address.zipCodeCity}
+                            onChange={handleInputChange('zipCodeCity')}
+                            error={errors.zipCodeCity}
+                        />
+                        {errors.zipCodeCity && <div style={{ color: 'red' }}>This field is required</div>}
+                    </Grid>
 
-                        <TextField
-                            fullWidth
-                            label="Customer Name"
-                            value={customerName}
-                            onChange={handleInputChange('customerName')}
-                            error={errors.customerName}
-                            variant="outlined"
-                        />
-                        {errors.customerName && <div style={{ color: 'red' }}>This field is required</div>}
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Accordion>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="address-content"
-                                id="address-header"
-                            >
-                                <Typography variant="body1" gutterBottom style={{ textAlign: 'left' }}>
-                                    Please enter customer address data
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Company name"
-                                            variant="outlined"
-                                            value={address.companyName}
-                                            onChange={handleInputChange('companyName')}
-                                            error={errors.companyName}
-                                        />
-                                        {errors.companyName && <div style={{ color: 'red' }}>This field is required</div>}
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="Street, Number"
-                                            variant="outlined"
-                                            value={address.streetNumber}
-                                            onChange={handleInputChange('streetNumber')}
-                                            error={errors.streetNumber}
-                                        />
-                                        {errors.streetNumber && <div style={{ color: 'red' }}>This field is required</div>}
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="ZIP Code, City"
-                                            variant="outlined"
-                                            value={address.zipCodeCity}
-                                            onChange={handleInputChange('zipCodeCity')}
-                                            error={errors.zipCodeCity}
-                                        />
-                                        {errors.zipCodeCity && <div style={{ color: 'red' }}>This field is required</div>}
-                                    </Grid>
-                                </Grid>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Ticket Number"
-                            value={ticketNumber}
-                            onChange={handleInputChange('ticketNumber')}
-                            error={errors.ticketNumber}
-                            variant="outlined"
-                        />
-                        {errors.ticketNumber && <div style={{ color: 'red' }}>This field is required</div>}
-                    </Grid>
                     <Grid item xs={12}>
                         <Button
                             variant="contained"

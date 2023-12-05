@@ -76,7 +76,7 @@ const WatermarkedPDF: React.FC = () => {
                 }, 2000);
             } catch (error) {
                 // Обработка ошибок
-                // ...
+                console.log(error);
             }
         }
     };

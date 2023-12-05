@@ -6,6 +6,7 @@ interface WatermarkPosition {
 }
 
 async function createWatermarkedPDF(inputPDF: File, customerName: string): Promise<Uint8Array> {
+    console.log('Im here...')
     try {
         // Преобразуем загруженный PDF в объект PDFDocument
         const pdfBytes = await inputPDF.arrayBuffer();

@@ -1,34 +1,25 @@
 import React, { useState } from 'react';
 import {
-    AppBar,
-    Toolbar,
-    IconButton,
     Container,
     Grid,
     Typography,
     RadioGroup,
     FormControlLabel,
     Radio,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     TextField,
     Button,
     CssBaseline,
 } from '@mui/material';
 import { Language } from '@mui/icons-material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/de';
 import Logo from './Logo';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 
-const NDA: React.FC = () => {
-    const [question1, setQuestion1] = useState('');
+const RDA: React.FC = () => {
     const [question2, setQuestion2] = useState('');
-    const [customerName, setCustomerName] = useState('');
+
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [address, setAddress] = useState({
         companyName: '',
@@ -41,10 +32,10 @@ const NDA: React.FC = () => {
 
     const handleDateChange = (date: Date | null) => {
         setSelectedDate(date);
+
     };
 
     const [errors, setErrors] = useState({
-        question1: false,
         question2: false,
         companyName: false,
         streetNumber: false,
@@ -58,7 +49,6 @@ const NDA: React.FC = () => {
     const handleRequest = async () => {
         try {
             if (
-                !question1 ||
                 !question2 ||
                 !address.companyName ||
                 !address.streetNumber ||
@@ -69,7 +59,6 @@ const NDA: React.FC = () => {
                 !selectedDate
             ) {
                 setErrors({
-                    question1: !question1,
                     question2: !question2,
                     companyName: !address.companyName,
                     streetNumber: !address.streetNumber,
@@ -80,19 +69,21 @@ const NDA: React.FC = () => {
                     date: !selectedDate,
                 });
             } else {
-                const response = await fetch('http://80.158.59.110/get_rda', {
+
+                
+                
+                const response = await fetch('https://auditrequest.tsi-dev.otc-service.com/get_rda', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        question1,
                         question2,
                         address,
                         ticketNumber,
                         salesRepresentative,
                         telefonnummer,
-                        selectedDate,
+                        selectedDate
                     }),
                 });
 
@@ -106,8 +97,12 @@ const NDA: React.FC = () => {
                     const year = currentDate.getFullYear();
                     const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
                     const day = currentDate.getDate().toString().padStart(2, '0');
-                    const formattedDate = `${year}${month}${day}`;
-                    a.download = `RDA_${customerName}_${formattedDate}.pdf`;
+                    const formattedDate = `${year}-${month}-${day}`;
+                    let doc_name = "Berichtsweitergabeerklärung";
+                    if (question2 === "English") {
+                        doc_name = "RDA";
+                    }
+                    a.download = `${doc_name}_${address.companyName}_${formattedDate}.pdf`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
@@ -126,33 +121,39 @@ const NDA: React.FC = () => {
             [fieldName]: e.target.value.length > 0 ? false : true,
         }));
 
-        if (fieldName === 'question1') {
-            setQuestion1(e.target.value);
-        } else if (fieldName === 'question2') {
-            setQuestion2(e.target.value);
-        } else if (fieldName === 'customerName') {
-            setCustomerName(e.target.value);
-        } else if (fieldName === 'companyName') {
-            setAddress((prevState) => ({
-                ...prevState,
-                companyName: e.target.value,
-            }));
-        } else if (fieldName === 'streetNumber') {
-            setAddress((prevState) => ({
-                ...prevState,
-                streetNumber: e.target.value,
-            }));
-        } else if (fieldName === 'zipCodeCity') {
-            setAddress((prevState) => ({
-                ...prevState,
-                zipCodeCity: e.target.value,
-            }));
-        } else if (fieldName === 'ticketNumber') {
-            setTicketNumber(e.target.value);
-        } else if (fieldName === 'telefonnummer') {
-            setTelefonnummer(e.target.value);
-        } else if (fieldName === 'salesRepresentative') {
-            setSalesRepresentative(e.target.value);
+        switch (fieldName) {
+            case 'question2':
+                setQuestion2(e.target.value);
+                break;
+            case 'companyName':
+                setAddress((prevState) => ({
+                    ...prevState,
+                    companyName: e.target.value,
+                }));
+                break;
+            case 'streetNumber':
+                setAddress((prevState) => ({
+                    ...prevState,
+                    streetNumber: e.target.value,
+                }));
+                break;
+            case 'zipCodeCity':
+                setAddress((prevState) => ({
+                    ...prevState,
+                    zipCodeCity: e.target.value,
+                }));
+                break;
+            case 'ticketNumber':
+                setTicketNumber(e.target.value);
+                break;
+            case 'telefonnummer':
+                setTelefonnummer(e.target.value);
+                break;
+            case 'salesRepresentative':
+                setSalesRepresentative(e.target.value);
+                break;
+            default:
+                break;
         }
     };
 
@@ -167,31 +168,6 @@ const NDA: React.FC = () => {
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="body1" style={{ textAlign: 'left', fontWeight: 'bold' }}>
-                            Is the report for an existing customer OR a potential customer/a customer of the customer?
-                        </Typography>
-                        <RadioGroup
-                            aria-label="CustomerType"
-                            name="question1"
-                            value={question1}
-                            onChange={handleInputChange('question1')}
-                        >
-                            <FormControlLabel
-                                value="Existing"
-                                control={<Radio color="secondary" />}
-                                label="Existing"
-                                labelPlacement="end"
-                            />
-                            <FormControlLabel
-                                value="Potential Cust/Cust of cust"
-                                control={<Radio color="secondary" />}
-                                label="Potential Cust/Cust of cust"
-                                labelPlacement="end"
-                            />
-                        </RadioGroup>
-                        {errors.question1 && <div style={{ color: 'red' }}>This field is required</div>}
-                    </Grid>
-                    <Grid item xs={12}>
                         <Typography variant="body1" gutterBottom style={{ textAlign: 'left', fontWeight: 'bold' }}>
                             Language
                         </Typography>
@@ -202,140 +178,124 @@ const NDA: React.FC = () => {
                             onChange={handleInputChange('question2')}
                         >
                             <FormControlLabel
-                                value="English"
-                                control={<Radio color="secondary" />}
-                                label="English"
-                                labelPlacement="end"
-                            />
-                            <FormControlLabel
                                 value="Deutsch"
                                 control={<Radio color="secondary" />}
                                 label="Deutsch"
                                 labelPlacement="end"
                             />
+                            <FormControlLabel
+                                value="English"
+                                control={<Radio color="secondary" />}
+                                label="English"
+                                labelPlacement="end"
+                            />
+                            
                         </RadioGroup>
                         {errors.question2 && <div style={{ color: 'red' }}>This field is required</div>}
                     </Grid>
                     <Grid item xs={12}>
-                        <Accordion>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="address-content"
-                                id="address-header"
-                            >
-                                <Typography variant="body1" gutterBottom style={{ textAlign: 'left' }}>
-                                    Please enter customer address data
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Company name"
-                                            variant="outlined"
-                                            value={address.companyName}
-                                            onChange={handleInputChange('companyName')}
-                                            error={errors.companyName}
-                                        />
-                                        {errors.companyName && <div style={{ color: 'red' }}>This field is required</div>}
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="Street, Number"
-                                            variant="outlined"
-                                            value={address.streetNumber}
-                                            onChange={handleInputChange('streetNumber')}
-                                            error={errors.streetNumber}
-                                        />
-                                        {errors.streetNumber && <div style={{ color: 'red' }}>This field is required</div>}
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="ZIP Code, City"
-                                            variant="outlined"
-                                            value={address.zipCodeCity}
-                                            onChange={handleInputChange('zipCodeCity')}
-                                            error={errors.zipCodeCity}
-                                        />
-                                        {errors.zipCodeCity && <div style={{ color: 'red' }}>This field is required</div>}
-                                    </Grid>
-                                </Grid>
-                            </AccordionDetails>
-                        </Accordion>
+                        <div>
+                            <Typography variant="body1" gutterBottom style={{ textAlign: 'left' }}>
+                                Please enter customer address data
+                            </Typography>
+                            {/* Customer Address Section */}
+                        </div>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Company name"
+                                    variant="outlined"
+                                    value={address.companyName}
+                                    onChange={handleInputChange('companyName')}
+                                    error={errors.companyName}
+                                />
+                                {errors.companyName && <div style={{ color: 'red' }}>This field is required</div>}
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Street, Number"
+                                    variant="outlined"
+                                    value={address.streetNumber}
+                                    onChange={handleInputChange('streetNumber')}
+                                    error={errors.streetNumber}
+                                />
+                                {errors.streetNumber && <div style={{ color: 'red' }}>This field is required</div>}
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="ZIP Code, City"
+                                    variant="outlined"
+                                    value={address.zipCodeCity}
+                                    onChange={handleInputChange('zipCodeCity')}
+                                    error={errors.zipCodeCity}
+                                />
+                                {errors.zipCodeCity && <div style={{ color: 'red' }}>This field is required</div>}
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                        <Accordion>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="additional-info-content"
-                                id="additional-info-header"
-                            >
-                                <Typography variant="body1" gutterBottom style={{ textAlign: 'left' }}>
-                                    Enter additional information
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Ticket Number"
-                                            value={ticketNumber}
-                                            onChange={handleInputChange('ticketNumber')}
-                                            error={errors.ticketNumber}
-                                            variant="outlined"
-                                        />
-                                        {errors.ticketNumber && (
-                                            <div style={{ color: 'red' }}>This field is required</div>
-                                        )}
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Sales Representative"
-                                            value={salesRepresentative}
-                                            onChange={handleInputChange('salesRepresentative')}
-                                            error={errors.salesRepresentative}
-                                            variant="outlined"
-                                        />
-                                        {errors.salesRepresentative && (
-                                            <div style={{ color: 'red' }}>This field is required</div>
-                                        )}
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="Telefonnummer"
-                                            value={telefonnummer}
-                                            onChange={handleInputChange('telefonnummer')}
-                                            error={errors.telefonnummer}
-                                            variant="outlined"
-                                            inputProps={{
-                                                inputMode: 'numeric',
-                                                pattern: '[0-9]*',
-                                            }}
-                                        />
-                                        {errors.telefonnummer && (
-                                            <div style={{ color: 'red' }}>This field is required</div>
-                                        )}
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                            <DatePicker
-                                                value={selectedDate}
-                                                onChange={handleDateChange}
-                                                format="M/D/YYYY"
-                                                label="Select a date"
-                                                slotProps={{ field: { shouldRespectLeadingZeros: true } }}
-                                            />
-                                        </LocalizationProvider>
-                                    </Grid>
-                                </Grid>
-                            </AccordionDetails>
-                        </Accordion>
+                        <div>
+                            <Typography variant="body1" gutterBottom style={{ textAlign: 'left' }}>
+                                Enter additional information
+                            </Typography>
+                            {/* Additional Information Section */}
+                        </div>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Ticket Number"
+                                    value={ticketNumber}
+                                    onChange={handleInputChange('ticketNumber')}
+                                    error={errors.ticketNumber}
+                                    variant="outlined"
+                                />
+                                {errors.ticketNumber && <div style={{ color: 'red' }}>This field is required</div>}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Sales Representative / OTC Service Desk"
+                                    value={salesRepresentative}
+                                    onChange={handleInputChange('salesRepresentative')}
+                                    error={errors.salesRepresentative}
+                                    variant="outlined"
+                                />
+                                {errors.salesRepresentative && <div style={{ color: 'red' }}>This field is required</div>}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Telefonnummer"
+                                    value={telefonnummer}
+                                    onChange={handleInputChange('telefonnummer')}
+                                    error={errors.telefonnummer}
+                                    variant="outlined"
+                                    inputProps={{
+                                        inputMode: 'numeric',
+                                        pattern: '[0-9]*',
+                                    }}
+                                />
+                                {errors.telefonnummer && <div style={{ color: 'red' }}>This field is required</div>}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+                                    <DatePicker
+                                        
+                                        views={["year", "month", "day"]}
+                                        value={selectedDate}
+                                        onChange={handleDateChange}
+                                        format="YYYY-MM-DD" // Set the format to "YYYY-MM-DD"
+                                        
+                                        label="Select a date"
+                                        slotProps={{ field: { shouldRespectLeadingZeros: true } }}
+                                    />
+                                </LocalizationProvider>
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <Grid item xs={12}>
                         <Button
@@ -353,4 +313,4 @@ const NDA: React.FC = () => {
     );
 };
 
-export default NDA;
+export default RDA;
